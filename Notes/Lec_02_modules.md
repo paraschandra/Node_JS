@@ -112,3 +112,172 @@ console.log(superHero.getName()); // Superman
 const newSuperHero = require("./superHero");
 console.log(newSuperHero.getName()); // Superman instead of Batman (due to caching)
 ```
+
+**Import Export Patterns:**<br>
+a. For exporting single variable/function
+```js
+// math.js
+const add = (a, b) => {
+    return a + b;
+};
+
+module.exports = add;
+```
+```js
+// index.js
+const add = require("./math");
+console.log(add(2, 3)); // 5
+```
+
+b. Directly exporting a function
+```js
+// math.js
+module.exports = (a, b) => {
+    return a + b;
+};
+```
+
+c. Exporting more than one variable/function
+```js
+// math.js
+const add = (a, b) => {
+    return a+b;
+};
+
+const subtract = (a, b) => {
+    return a-b;
+};
+
+module.exports = {add, subtract};
+```
+```js
+// index.js
+const math = require("./math");
+
+console.log(math.add(2, 3)); // 5
+console.log(math.subtract(2, 3)); // -1
+```
+We can also destructure the module imports:
+```js
+// index.js
+const math = require("./math");
+const {add, subtract} = math;
+
+console.log(add(2, 3)); // 5
+console.log(subtract(2, 3)); // -1
+```
+
+d. Assigning modules as a property to `module.exports`
+```js
+// math.js
+module.exports.add = (a, b) => {
+    return a+b;
+};
+
+module.exports.subtract = (a, b) => {
+    return a-b;
+}
+```
+
+e. Using just exports
+```js
+// math.js
+exports.add = (a, b) => {
+    return a+b;
+};
+```
+> It is discouraged to use only exports
+
+**Module.exports vs exports:**<br>
+- `module.exports` is the actual object that gets exported. Think of it as the container that holds everything you want to make available to other modules.
+
+- `exports` is just a reference to module.exports. It's a shortcut for convenience.
+
+> Assigning a new value directly to exports breaks the reference to module.exports, leading to unexpected behavior.
+
+Therefore, it's better to stick with module.exports.
+
+### ES Modules
+ES modules is the ECMAScript standard for modules.
+
+It was introduced with ES2015.
+
+Node.js 14 and above support ES modules.
+
+Instead of module.exports, we use the `export` keyword.
+
+The export can be default or named.
+
+We import the exported variables or functions using the `import keyword`.
+
+If it is a default export, we can assign any name while importing.
+
+If it's a named export, the import name must be the same.
+
+The file extension `.mjs` is used.
+
+**Pattern-1:**
+```js
+// math.mjs
+const add = (a, b) => {
+    return a + b;
+}
+
+export default add;
+
+// OR
+
+export default (a, b) => {
+    return a+b;
+}
+```
+```js
+// index.mjs
+import add from "./math.mjs";
+console.log(add(2, 3)); // 5
+```
+
+**Pattern-2:**
+```js
+// math.mjs
+const add = (a, b) => {
+    return a+b;
+};
+
+const subtract = (a, b) => {
+    return a-b;
+};
+
+export default {add, subtract};
+```
+```js
+// index.mjs
+import math from "./math.mjs";
+const {add, subtract} = math;
+
+console.log(add(2, 3));
+console.log(subtract(2, 3));
+```
+
+**Pattern-3: Named exports**
+```js
+// math.mjs
+export const add = (a, b) => {
+    return a+b;
+}
+
+export const subtract = (a, b) => {
+    return a-b;
+}
+```
+```js
+// index.mjs
+import * as math from "./math.mjs";
+const {add, subtract} = math;
+
+// or
+import {add, subtract} from "./math.mjs";
+
+console.log(add(2, 3));
+console.log(subtract(2, 3));
+```
