@@ -97,3 +97,44 @@ console.log(path.resolve("/folder1", "//folder2", "../index.html"));
 console.log(path.resolve(__dirname, "data.json"));
 // /path_to_cwd/NodeJS/data.json
 ```
+
+**Callbacks:**<br>
+In JS, functions are first class objects.
+
+A function can be passed as an argument to a function.
+
+A function can also be returned as values from other functions.
+```js
+function greet(name){
+    console.log(`Hello ${name}`);
+}
+
+function hof(callback){
+    const name = 'Vishwas';
+    callback(name);
+}
+
+hof(greet); // Hello Vishwas
+```
+
+**Types of Callbacks:**<br>
+1. `Synchronous callbacks:` A callback which is executed immediately is called a synchronous callback.
+```js
+// Synchronous callbacks example
+let numbers = [1, 2, 4, 7, 3, 5, 6]
+numbers.sort((a, b) => a-b);
+numbers.filter(n => n % 2 === 0);
+numbers.map(n => n/2);
+```
+
+2. `Asynchronous callbacks:` A callback that is often used to continue or resume code execution after an asynchronous operation has completed.
+Asynchronous callbacks are used to delay the execution of a function until a particular time or event has occurred.<br><br>
+In Node.js have an asynchronous nature to prevent blocking of execution.<br>
+Ex: reading data from a file, fetching data from a database or handling a network request.
+```js
+// Example in browser
+function callback() {
+    document.getElementById("demo").innerHTML = "Hello World";
+}
+document.getElementById("btn").addEventListener("click", callback);
+```
