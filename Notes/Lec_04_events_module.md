@@ -71,4 +71,3 @@ pizzaShop.orderNumber();
 ```
 
 > **http**, **stream** and **fs** modules also extends EventsEmitter class
-
