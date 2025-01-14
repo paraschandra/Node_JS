@@ -144,3 +144,40 @@ If there are more callbacks to be processed, the loop is kept alive for one more
 On the other hand, if all callbacks are executed and there is no more code to process, the event loop exits.
 
 **Microtask Queue** <br>
+In Node.js, microtasks are a crucial part of the event loop. They form a separate queue within the event loop that executes immediately after the current synchronous code finishes and before the next iteration of the event loop.
+
+First, the nextTick queue is executed followed by the promise queue.
+
+Use of process.nextTick is discouraged as it can cause the rest of the event loop to starve. But it can be used to:
+1. Allow users to handle errors, cleanup any then unneeded resources, or perhaps try the request again before the event loop continues.
+2. Allow a callback to run after the call stack has unwound but before the event loop continues.
+
+**Timer Queue** <br>
+In Node.js, timer queues are a crucial component of the event loop, responsible for scheduling and executing functions after a specified delay.
+
+Two Types of callbacks:
+- **setTimeout():** Executes a function once after a specified delay.
+- **setInterval():** Executes a function repeatedly at specified intervals.
+
+Microtasks have higher priority than timers in the event loop. If microtasks are pending, they will be executed before any timers.
+
+Timer queues in Node.js provide a fundamental mechanism for scheduling asynchronous operations.
+
+**I/O Queue** <br>
+In Node.js, I/O (Input/Output) operations are handled asynchronously using I/O queues. This allows Node.js to efficiently handle a large number of concurrent I/O requests without blocking the main event loop.
+
+Callbacks in the microtask queues are executed before callbacks in the I/O queue.
+
+I/O callbacks are executed after microtask queues callbacks and timer queue callbacks.
+
+**I/O Polling:** I/O events are polled and callback functions are added to the I/O queue only after the I/O is complete.
+
+**Check Queue** <br>
+In Node.js, the "check queue" is a specific queue within the event loop that holds callbacks registered using the `setImmediate()` function.
+
+**Close Queue** <br>
+The close queue holds callbacks associated with closing resources like sockets, file handles, and other objects that require cleanup. 
+
+Close callbacks are typically triggered when a resource is explicitly closed (e.g., socket.end(), fs.close()), or when an error occurs during a resource operation.
+
+The close queue is processed last in the event loop, after the check queue and timer callbacks.
