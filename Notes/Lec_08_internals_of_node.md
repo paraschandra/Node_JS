@@ -67,3 +67,51 @@ By default, libuv uses a thread pool with 4 threads, but this number can be chan
 process.env.UV_THREADPOOL_SIZE = 8;
 ```
 > Increasing thread pool size beyond the number of core on the machine makes the OS to juggle the threads between the available cores resulting in the increased execution time.
+
+**Network I/O** <br>
+https.request is a network i/o operations and not a CPU bound operation.
+
+It does not use the thread pool.
+
+Libuv instead delegates the work to the operating system kernel and whenever possible, it will poll the kernel and see if the request has completed.
+
+```js
+const https = require('node:https');
+
+const MAX_CALLS = 5;
+
+const start = Date.now();
+for (let i = 0; i < MAX_CALLS; i++){
+    https
+        .request("https://www.google.com", (res) => {
+            res.on("data", () => {});
+            res.on("end", () => {
+                console.log(`Request: ${i + 1}`, Date.now() - start);
+            })
+        })
+        .end();
+}
+/*
+Request: 4 1070
+Request: 3 1087
+Request: 5 1100
+Request: 1 1109
+Request: 2 2375
+*/
+```
+
+In Node.js async methods are handled by libuv. They are handled in two different ways:
+1. Native async mechanism
+2. Thread pool
+
+Whenever possible, Libuv will use native async mechanisms in the OS so as to avoid blocking the main thread.
+
+Since this is part of the kernel, there is different mechanism for each OS. We've epoll for Linux, Kqueue for MacOS and IO Completion Port on Windows.
+
+Relying on native async mechanisms makes Node scalable as the only limitation is the operating system kernel.
+
+Example of this type is a network I/O operation.
+
+If there is no native async support and the task is file I/O or CPU intensive, libuv uses the thread pool to avoid blocking the main thread.
+
+Although the thread pool preserves asynchronicity with respect to Node's main thread, it can still become a bottleneck is all threads are busy.
