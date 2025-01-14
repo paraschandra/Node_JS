@@ -12,7 +12,7 @@ At its core, it contains three major components:
 
 - **JS library** to provide functions & utilities to tap into C++ features using V8 engine.
 
-### libuv
+### Libuv
 libuv is a cross platform open source library written in C language.
 
 It handles asynchronous non-blocking operations in Node.js
@@ -115,3 +115,32 @@ Example of this type is a network I/O operation.
 If there is no native async support and the task is file I/O or CPU intensive, libuv uses the thread pool to avoid blocking the main thread.
 
 Although the thread pool preserves asynchronicity with respect to Node's main thread, it can still become a bottleneck is all threads are busy.
+
+### Event Loop
+It is a C program and is part of libuv.
+
+A design pattern that orchestrates or co-ordinates the execution of synchronous and asynchronous code in Node.js
+
+`Event Loop`
+<img src="https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2F6b288555862049b4b5cd7f19e2ae909f?format=webp&width=2000" class="center">
+
+User written synchronous JS code takes priority over async code that the runtime would like to execute.
+
+Only after the call stack is empty, the event loop comes into picture.
+
+**Execution order:**<br>
+1. Any callbacks in the micro task queues are executed. First, tasks in the nextTick queue and only then tasks in the promise queue.
+2. All callbacks within the timer queue are executed.
+3. Callbacks in the micro task queues if present are executed.
+4. All callbacks within the I/O queue are executed.
+5. Callbacks in the micro task queues if present are executed. nextTick queue followed by Promise queue.
+6. All callbacks in the check queue are executed.
+7. Callbacks in the micro task if present are executed.
+8. All callbacks in the close queue are executed.
+9. For one final time in the same loop, the micro task queues are executed. nextTick queue followed by promise queue.
+
+If there are more callbacks to be processed, the loop is kept alive for one more run and the same steps are repeated.
+
+On the other hand, if all callbacks are executed and there is no more code to process, the event loop exits.
+
+**Microtask Queue** <br>
